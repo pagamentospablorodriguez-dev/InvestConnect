@@ -227,6 +227,7 @@ export function ProjectDetailPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'financials' | 'bids' | 'docs'>('overview');
   const [realProject, setRealProject] = useState<Project | null>(null);
   const [bids, setBids] = useState<InvestmentBid[]>([]);
+  const [fakeBidStatuses, setFakeBidStatuses] = useState<Record<string, string>>({});
 
   const isEntrepreneur = profile?.user_type === 'entrepreneur';
 
@@ -271,7 +272,7 @@ export function ProjectDetailPage() {
     status: 'pending' as const, created_at: new Date(Date.now() - (i + 1) * 43200000).toISOString(), investor: inv.profile,
   }));
 
-  const allBids = [...fakeBids, ...bids];
+  const allBids = [...fakeBids.map(fb => ({ ...fb, status: (fakeBidStatuses[fb.id] || fb.status) as any })), ...bids];
   const highestBid = Math.max(...allBids.map(b => b.amount), 0);
 
   // Simulated financial metrics
@@ -436,9 +437,9 @@ export function ProjectDetailPage() {
                   {bid.message && <p className="text-sm text-gray-600 mt-3 pl-13">{bid.message}</p>}
                   {isEntrepreneur && bid.status === 'pending' && (
                     <div className="flex gap-2 mt-3 pl-13">
-                      <button className="px-4 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 transition-colors">Aceitar Lance</button>
-                      <button className="px-4 py-1.5 bg-primary-100 text-primary-700 text-xs font-semibold rounded-lg hover:bg-primary-200 transition-colors">Contra-Propor</button>
-                      <button className="px-4 py-1.5 bg-gray-200 text-gray-600 text-xs font-semibold rounded-lg hover:bg-gray-300 transition-colors">Recusar</button>
+                      <button onClick={() => { setFakeBidStatuses(prev => ({ ...prev, [bid.id]: 'accepted' })); toast.success('Lance aceito!'); }} className="px-4 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 transition-colors">Aceitar Lance</button>
+                      <button onClick={() => { setFakeBidStatuses(prev => ({ ...prev, [bid.id]: 'counter' })); toast.success('Contra-proposta enviada!'); }} className="px-4 py-1.5 bg-primary-100 text-primary-700 text-xs font-semibold rounded-lg hover:bg-primary-200 transition-colors">Contra-Propor</button>
+                      <button onClick={() => { setFakeBidStatuses(prev => ({ ...prev, [bid.id]: 'rejected' })); toast.success('Lance recusado.'); }} className="px-4 py-1.5 bg-gray-200 text-gray-600 text-xs font-semibold rounded-lg hover:bg-gray-300 transition-colors">Recusar</button>
                     </div>
                   )}
                 </div>
