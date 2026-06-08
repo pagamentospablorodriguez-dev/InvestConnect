@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { toast } from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import {
   TrendingUp, Package, DollarSign, CheckCircle,
   Plus, Users, Building, Target, Globe, MessageSquare,
-  Sparkles, ArrowRight, Shield, Zap,
-  Eye, Rocket,
+  Sparkles, ArrowRight, Rocket,
 } from 'lucide-react';
 import {
   formatCompactCurrency, formatRelativeTime,
@@ -24,15 +22,6 @@ const typeIcons: Record<string, any> = {
   angel: Users, fund: Building, shark_talent_scout: Target, international: Globe,
 };
 
-const SIMULATED_EVENTS = [
-  { type: 'bid', message: 'Novo lance de R$ 75.000 no projeto Café Orgânico', icon: DollarSign },
-  { type: 'view', message: 'Roberto Almeida visualizou seu projeto', icon: Eye },
-  { type: 'investor', message: 'Novo investidor verificado: Impact Brasil Fund', icon: Shield },
-  { type: 'bid', message: 'Lance de R$ 120.000 recebido no EdTech', icon: DollarSign },
-  { type: 'message', message: 'Mariana Costa enviou uma mensagem', icon: MessageSquare },
-  { type: 'deal', message: 'Negócio fechado! R$ 90.000 investidos', icon: CheckCircle },
-];
-
 export default function DashboardHome() {
   const { profile } = useAuth();
   const isEntrepreneur = profile?.user_type === 'entrepreneur';
@@ -40,7 +29,6 @@ export default function DashboardHome() {
   const [bidCount, setBidCount] = useState<number | null>(null);
   const [msgCount, setMsgCount] = useState<number | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [liveActivity, setLiveActivity] = useState<typeof FAKE_ACTIVITY>(FAKE_ACTIVITY.slice(0, 8));
 
   useEffect(() => {
     if (profile?.id) {
@@ -62,83 +50,20 @@ export default function DashboardHome() {
     }
   }, [profile]);
 
-  // Simulated real-time activity
-  useEffect(() => {
-    if (!isEntrepreneur) return;
-    const simulateEvent = () => {
-      const event = SIMULATED_EVENTS[Math.floor(Math.random() * SIMULATED_EVENTS.length)];
-      toast.custom((t) => (
-        <div className={`${t.visible ? 'animate-slide-in-right' : 'animate-slide-out-right'} bg-gray-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 max-w-sm`}>
-          <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
-            <event.icon className="w-4 h-4 text-emerald-400" />
-          </div>
-          <p className="text-sm font-medium">{event.message}</p>
-        </div>
-      ), { id: 'sim-event', duration: 4000, position: 'top-right' });
-    };
-    const timeout = setTimeout(() => {
-      simulateEvent();
-    }, 8000 + Math.random() * 12000);
-    const interval = setInterval(() => {
-      simulateEvent();
-    }, 25000 + Math.random() * 20000);
-    return () => { clearTimeout(timeout); clearInterval(interval); };
-  }, [isEntrepreneur]);
-
-  // Simulated new activity items appearing
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const types = ['investment', 'bid', 'new_project', 'new_investor'];
-      const type = types[Math.floor(Math.random() * types.length)];
-      const names = ['Lucas Ferreira', 'Ana Beatriz', 'Pedro Almeida', 'Juliana Rocha', 'Marcos Dias'];
-      const cities = ['São Paulo', 'Rio de Janeiro', 'Curitiba', 'Belo Horizonte', 'Salvador'];
-      const amounts = [45000, 80000, 120000, 65000, 95000, 150000, 200000];
-      const name = names[Math.floor(Math.random() * names.length)];
-      const city = cities[Math.floor(Math.random() * cities.length)];
-      const amount = amounts[Math.floor(Math.random() * amounts.length)];
-
-      const titles: Record<string, string> = {
-        investment: 'Investimento realizado!',
-        bid: 'Novo lance!',
-        new_project: 'Novo projeto publicado',
-        new_investor: 'Novo investidor verificado',
-      };
-      const descs: Record<string, string> = {
-        investment: `${name} investiu R$ ${amount.toLocaleString('pt-BR')} em um projeto`,
-        bid: `${name} fez lance de R$ ${amount.toLocaleString('pt-BR')}`,
-        new_project: `${name} lançou projeto buscando R$ ${amount.toLocaleString('pt-BR')}`,
-        new_investor: `${name} se juntou à plataforma`,
-      };
-
-      const newItem: typeof FAKE_ACTIVITY[0] = {
-        id: `live-${Date.now()}`,
-        type: type as any,
-        title: titles[type],
-        description: descs[type],
-        amount,
-        city,
-        category: 'Tecnologia',
-        created_at: new Date().toISOString(),
-      };
-      setLiveActivity(prev => [newItem, ...prev.slice(0, 7)]);
-    }, 15000);
-    return () => clearInterval(interval);
-  }, []);
-
   const firstName = profile?.full_name?.split(' ')[0] || '';
 
   const entrepreneurStats = [
-    { label: 'Meus Projetos', value: projectCount ?? '-', icon: Package, color: 'bg-primary-500', href: '/dashboard/projetos', change: '+2 esta semana' },
-    { label: 'Lances Recebidos', value: bidCount ?? '-', icon: DollarSign, color: 'bg-emerald-500', href: '/dashboard/lances', change: 'R$ 75k+ pendente' },
-    { label: 'Mensagens', value: msgCount ?? '-', icon: MessageSquare, color: 'bg-amber-500', href: '/dashboard/mensagens', change: '3 nao lidas' },
-    { label: 'Projetos Financiados', value: FAKE_FUNDED_DEALS.filter(d => d.status === 'completed').length, icon: CheckCircle, color: 'bg-green-500', href: '/dashboard/lances', change: 'R$ 470M total' },
+    { label: 'Meus Projetos', value: projectCount ?? '-', icon: Package, color: 'bg-primary-500', href: '/dashboard/projetos' },
+    { label: 'Lances Recebidos', value: bidCount ?? '-', icon: DollarSign, color: 'bg-emerald-500', href: '/dashboard/lances' },
+    { label: 'Mensagens', value: msgCount ?? '-', icon: MessageSquare, color: 'bg-amber-500', href: '/dashboard/mensagens' },
+    { label: 'Projetos Financiados', value: FAKE_FUNDED_DEALS.filter(d => d.status === 'completed').length, icon: CheckCircle, color: 'bg-green-500', href: '/dashboard/lances' },
   ];
 
   const investorStats = [
-    { label: 'Projetos Disponiveis', value: FAKE_PROJECTS.length, icon: Package, color: 'bg-primary-500', href: '/dashboard/projetos', change: '+3 novos hoje' },
-    { label: 'Meus Lances', value: bidCount ?? '-', icon: DollarSign, color: 'bg-emerald-500', href: '/dashboard/lances', change: '2 pendentes' },
-    { label: 'Mensagens', value: msgCount ?? '-', icon: MessageSquare, color: 'bg-amber-500', href: '/dashboard/mensagens', change: '1 nao lida' },
-    { label: 'Investidores Ativos', value: PLATFORM_STATS.totalInvestors, icon: Users, color: 'bg-sky-500', href: '/dashboard/investidores', change: '+12 este mes' },
+    { label: 'Projetos Disponiveis', value: FAKE_PROJECTS.length, icon: Package, color: 'bg-primary-500', href: '/dashboard/projetos' },
+    { label: 'Meus Lances', value: bidCount ?? '-', icon: DollarSign, color: 'bg-emerald-500', href: '/dashboard/lances' },
+    { label: 'Mensagens', value: msgCount ?? '-', icon: MessageSquare, color: 'bg-amber-500', href: '/dashboard/mensagens' },
+    { label: 'Investidores Ativos', value: PLATFORM_STATS.totalInvestors, icon: Users, color: 'bg-sky-500', href: '/dashboard/investidores' },
   ];
 
   const stats = isEntrepreneur ? entrepreneurStats : investorStats;
@@ -147,7 +72,7 @@ export default function DashboardHome() {
     { label: 'Criar seu primeiro projeto', icon: Package, href: '/dashboard/projetos/novo', done: projectCount !== null && projectCount > 0 },
     { label: 'Completar seu perfil', icon: Users, href: '/dashboard/configuracoes', done: !!profile?.bio },
     { label: 'Explorar investidores', icon: Building, href: '/dashboard/investidores', done: false },
-    { label: 'Enviar mensagem a um investidor', icon: MessageSquare, href: '/dashboard/mensagens', done: false },
+    { label: 'Conversar com um investidor', icon: MessageSquare, href: '/dashboard/mensagens', done: false },
   ];
 
   return (
@@ -159,36 +84,21 @@ export default function DashboardHome() {
         className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary-600 via-primary-700 to-emerald-600 p-6 sm:p-8"
       >
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 90% 10%, white, transparent 50%), radial-gradient(circle at 10% 80%, rgba(16,185,129,0.3), transparent 50%)' }} />
-        <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
-          <div className="flex items-center gap-2 bg-white/10 rounded-full px-3 py-1.5 border border-white/20">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-            </span>
-            <span className="text-white/80 text-xs font-medium">847 investidores online</span>
-          </div>
-        </div>
         <div className="relative z-10">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white mb-1">
             Bem-vindo{firstName ? `, ${firstName}` : ''}!
           </h1>
           <p className="text-white/70 text-sm sm:text-base max-w-xl">
             {isEntrepreneur
-              ? 'Sua plataforma esta ativa. Investidores estao buscando projetos agora mesmo — crie seu projeto e receba lances em ate 7 dias.'
-              : 'Explore projetos e encontre oportunidades de investimento com alto potencial de retorno.'}
+              ? 'Gerencie seus projetos e acompanhe os lances de investimento em tempo real.'
+              : 'Explore projetos e encontre oportunidades de investimento com alto potencial.'}
           </p>
           {isEntrepreneur && (
             <div className="flex flex-wrap gap-3 mt-5">
-              <Link
-                to="/dashboard/projetos/novo"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-primary-700 font-semibold rounded-xl hover:bg-gray-50 transition-all text-sm shadow-lg"
-              >
+              <Link to="/dashboard/projetos/novo" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-primary-700 font-semibold rounded-xl hover:bg-gray-50 transition-all text-sm shadow-lg">
                 <Plus className="w-4 h-4" /> Criar Novo Projeto
               </Link>
-              <Link
-                to="/dashboard/investidores"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 border border-white/20 transition-all text-sm"
-              >
+              <Link to="/dashboard/investidores" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 border border-white/20 transition-all text-sm">
                 <Users className="w-4 h-4" /> Ver Investidores
               </Link>
             </div>
@@ -196,61 +106,26 @@ export default function DashboardHome() {
         </div>
       </motion.div>
 
-      {/* Live Activity Banner */}
-      {isEntrepreneur && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-emerald-50 border border-emerald-100 rounded-xl px-5 py-3 flex items-center gap-3 overflow-hidden"
-        >
-          <div className="flex-shrink-0 flex items-center gap-2">
-            <Zap className="w-4 h-4 text-emerald-600" />
-            <span className="text-sm font-semibold text-emerald-700">AO VIVO</span>
-          </div>
-          <div className="overflow-hidden flex-1">
-            <p className="text-sm text-emerald-700 truncate">
-              {liveActivity[0]?.title} — {liveActivity[0]?.description} <span className="text-emerald-500">({liveActivity[0]?.city})</span>
-            </p>
-          </div>
-          <span className="text-xs text-emerald-500 flex-shrink-0">{formatRelativeTime(liveActivity[0]?.created_at || new Date().toISOString())}</span>
-        </motion.div>
-      )}
-
       {/* Onboarding Checklist */}
       {showOnboarding && isEntrepreneur && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="card p-6 border-primary-200 bg-primary-50/30"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+          className="card p-6 border-primary-200 bg-primary-50/30">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center">
               <Rocket className="w-5 h-5 text-primary-600" />
             </div>
             <div>
-              <h3 className="font-bold text-gray-900">Comece recebendo lances em 7 dias</h3>
+              <h3 className="font-bold text-gray-900">Comece recebendo lances</h3>
               <p className="text-sm text-gray-500">Complete estes passos para maximizar suas chances</p>
             </div>
           </div>
           <div className="space-y-2">
             {onboardingSteps.map((step) => (
-              <Link
-                key={step.label}
-                to={step.href}
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-white transition-colors group"
-              >
+              <Link key={step.label} to={step.href} className="flex items-center gap-3 p-3 rounded-lg hover:bg-white transition-colors group">
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${step.done ? 'bg-emerald-100' : 'bg-gray-100 group-hover:bg-primary-100'}`}>
-                  {step.done ? (
-                    <CheckCircle className="w-4 h-4 text-emerald-600" />
-                  ) : (
-                    <step.icon className="w-4 h-4 text-gray-400 group-hover:text-primary-600" />
-                  )}
+                  {step.done ? <CheckCircle className="w-4 h-4 text-emerald-600" /> : <step.icon className="w-4 h-4 text-gray-400 group-hover:text-primary-600" />}
                 </div>
-                <span className={`text-sm font-medium ${step.done ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
-                  {step.label}
-                </span>
+                <span className={`text-sm font-medium ${step.done ? 'text-gray-400 line-through' : 'text-gray-700'}`}>{step.label}</span>
                 {!step.done && <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-primary-500 ml-auto" />}
               </Link>
             ))}
@@ -261,10 +136,7 @@ export default function DashboardHome() {
               <span className="text-xs font-bold text-primary-600">{onboardingSteps.filter(s => s.done).length}/{onboardingSteps.length}</span>
             </div>
             <div className="w-full h-2 bg-primary-100 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-primary-600 rounded-full transition-all duration-500"
-                style={{ width: `${(onboardingSteps.filter(s => s.done).length / onboardingSteps.length) * 100}%` }}
-              />
+              <div className="h-full bg-primary-600 rounded-full transition-all duration-500" style={{ width: `${(onboardingSteps.filter(s => s.done).length / onboardingSteps.length) * 100}%` }} />
             </div>
           </div>
         </motion.div>
@@ -274,18 +146,13 @@ export default function DashboardHome() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, i) => (
           <Link key={stat.label} to={stat.href}>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
-              className="stat-card hover:shadow-md hover:border-gray-200 transition-all cursor-pointer"
-            >
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
+              className="stat-card hover:shadow-md hover:border-gray-200 transition-all cursor-pointer">
               <div className={`${stat.color} w-10 h-10 rounded-xl flex items-center justify-center mb-3 shadow-lg`}>
                 <stat.icon className="w-5 h-5 text-white" />
               </div>
               <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
               <p className="text-sm text-gray-500 mt-0.5">{stat.label}</p>
-              <p className="text-xs text-emerald-600 mt-1 font-medium">{stat.change}</p>
             </motion.div>
           </Link>
         ))}
@@ -341,17 +208,11 @@ export default function DashboardHome() {
         {/* Activity Feed */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <h2 className="font-bold text-gray-900">Atividade Recente</h2>
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-              </span>
-            </div>
-            <span className="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full">Tempo real</span>
+            <h2 className="font-bold text-gray-900">Atividade Recente</h2>
+            <span className="text-xs text-gray-400">Atualizacoes</span>
           </div>
-          <div className="divide-y divide-gray-50 max-h-[420px] overflow-y-auto">
-            {liveActivity.map((item) => (
+          <div className="divide-y divide-gray-50">
+            {FAKE_ACTIVITY.slice(0, 8).map((item) => (
               <div key={item.id} className="px-5 py-3.5 hover:bg-gray-50/50 transition-colors">
                 <div className="flex items-start gap-3">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
@@ -382,10 +243,7 @@ export default function DashboardHome() {
             <h2 className="font-bold text-gray-900">
               {isEntrepreneur ? 'Investidores em Destaque' : 'Projetos em Destaque'}
             </h2>
-            <Link
-              to={isEntrepreneur ? '/dashboard/investidores' : '/dashboard/projetos'}
-              className="text-xs text-primary-600 font-semibold hover:text-primary-700"
-            >
+            <Link to={isEntrepreneur ? '/dashboard/investidores' : '/dashboard/projetos'} className="text-xs text-primary-600 font-semibold hover:text-primary-700">
               Ver todos
             </Link>
           </div>
@@ -432,12 +290,8 @@ export default function DashboardHome() {
       </div>
 
       {/* Platform Stats Banner */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-6 sm:p-8 relative overflow-hidden"
-      >
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+        className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-6 sm:p-8 relative overflow-hidden">
         <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, white, transparent 50%), radial-gradient(circle at 80% 50%, rgba(16,185,129,0.5), transparent 50%)' }} />
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-4">
@@ -446,41 +300,19 @@ export default function DashboardHome() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
             {[
-              { label: 'Investidores Ativos', value: `${PLATFORM_STATS.totalInvestors}+`, sub: '+12 este mes' },
-              { label: 'Total Investido', value: `R$ ${(PLATFORM_STATS.totalInvested / 1000000).toFixed(0)}M+`, sub: 'R$ 2.1M este mes' },
-              { label: 'Negocios Financiados', value: `${PLATFORM_STATS.totalDeals}+`, sub: '+5 esta semana' },
-              { label: 'Taxa de Sucesso', value: `${PLATFORM_STATS.successRate}%`, sub: 'Acima da media' },
+              { label: 'Investidores Ativos', value: `${PLATFORM_STATS.totalInvestors}+` },
+              { label: 'Total Investido', value: `R$ ${(PLATFORM_STATS.totalInvested / 1000000).toFixed(0)}M+` },
+              { label: 'Negocios Financiados', value: `${PLATFORM_STATS.totalDeals}+` },
+              { label: 'Taxa de Sucesso', value: `${PLATFORM_STATS.successRate}%` },
             ].map((s) => (
               <div key={s.label} className="text-center">
                 <p className="text-2xl sm:text-3xl font-bold text-white">{s.value}</p>
                 <p className="text-gray-400 text-sm mt-1">{s.label}</p>
-                <p className="text-emerald-400 text-xs mt-0.5">{s.sub}</p>
               </div>
             ))}
           </div>
         </div>
       </motion.div>
-
-      {/* Guarantee Banner */}
-      {isEntrepreneur && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="bg-gradient-to-r from-primary-50 to-emerald-50 border border-primary-100 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center gap-4"
-        >
-          <div className="w-14 h-14 rounded-2xl bg-primary-100 flex items-center justify-center flex-shrink-0">
-            <Shield className="w-7 h-7 text-primary-600" />
-          </div>
-          <div className="text-center sm:text-left flex-1">
-            <h3 className="font-bold text-gray-900 text-lg">Garantia incondicional de 7 dias</h3>
-            <p className="text-gray-500 text-sm mt-1">Se voce nao estiver satisfeito com a plataforma nos primeiros 7 dias, devolvemos 100% do seu investimento. Sem perguntas.</p>
-          </div>
-          <Link to="/dashboard/projetos/novo" className="btn-primary flex-shrink-0">
-            <Rocket className="w-4 h-4" /> Comecar Agora
-          </Link>
-        </motion.div>
-      )}
     </div>
   );
 }
