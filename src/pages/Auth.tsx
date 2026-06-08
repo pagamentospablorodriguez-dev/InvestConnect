@@ -79,8 +79,8 @@ export function SignupPage() {
   const { signUp } = useAuth();
   const [step, setStep] = useState(1);
   const [showWelcome, setShowWelcome] = useState(false);
-  const preselectedType = searchParams.get('tipo') === 'investidor' ? 'investor' : 'entrepreneur';
-  const [userType, setUserType] = useState<'entrepreneur' | 'investor'>(preselectedType);
+  const initialType = searchParams.get('tipo') === 'investidor' ? 'investor' : 'entrepreneur';
+  const [userType, setUserType] = useState<'entrepreneur' | 'investor'>(initialType);
   const [investorType, setInvestorType] = useState('angel');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
