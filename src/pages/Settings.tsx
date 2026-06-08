@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 import {
   User, Mail, MapPin, Phone, Save, Camera,
-  Shield, Bell, Key,
+  Shield, Bell, Key, Eye, EyeOff,
 } from 'lucide-react';
 import { BRAZILIAN_STATES } from '../lib/utils';
 
@@ -19,6 +20,10 @@ export default function SettingsPage() {
     bio: profile?.bio || '',
   });
   const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'notifications'>('profile');
+  const [passwordForm, setPasswordForm] = useState({ current: '', new: '', confirm: '' });
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
 
   const handleSave = async () => {
     setSaving(true);
@@ -31,6 +36,30 @@ export default function SettingsPage() {
     });
     toast.success('Perfil atualizado com sucesso!');
     setSaving(false);
+  };
+
+  const handleChangePassword = async () => {
+    if (!passwordForm.new || !passwordForm.confirm) {
+      toast.error('Preencha todos os campos de senha.');
+      return;
+    }
+    if (passwordForm.new.length < 6) {
+      toast.error('A nova senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
+    if (passwordForm.new !== passwordForm.confirm) {
+      toast.error('As senhas nao coincidem.');
+      return;
+    }
+    setChangingPassword(true);
+    const { error } = await supabase.auth.updateUser({ password: passwordForm.new });
+    if (error) {
+      toast.error('Erro ao alterar senha. Verifique sua senha atual.');
+    } else {
+      toast.success('Senha alterada com sucesso!');
+      setPasswordForm({ current: '', new: '', confirm: '' });
+    }
+    setChangingPassword(false);
   };
 
   const isEntrepreneur = profile?.user_type === 'entrepreneur';
@@ -149,18 +178,36 @@ export default function SettingsPage() {
         <div className="card p-6 space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Senha Atual</label>
-            <input type="password" placeholder="Digite sua senha atual" className="input" />
+            <div className="relative">
+              <input type={showCurrent ? 'text' : 'password'} value={passwordForm.current} onChange={(e) => setPasswordForm({ ...passwordForm, current: e.target.value })} placeholder="Digite sua senha atual" className="input pr-10" />
+              <button type="button" onClick={() => setShowCurrent(!showCurrent)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                {showCurrent ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nova Senha</label>
-            <input type="password" placeholder="Digite a nova senha" className="input" />
+            <div className="relative">
+              <input type={showNew ? 'text' : 'password'} value={passwordForm.new} onChange={(e) => setPasswordForm({ ...passwordForm, new: e.target.value })} placeholder="Digite a nova senha" className="input pr-10" />
+              <button type="button" onClick={() => setShowNew(!showNew)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                {showNew ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Confirmar Nova Senha</label>
-            <input type="password" placeholder="Digite novamente" className="input" />
+            <input type="password" value={passwordForm.confirm} onChange={(e) => setPasswordForm({ ...passwordForm, confirm: e.target.value })} placeholder="Digite novamente" className="input" />
           </div>
+          {passwordForm.new && passwordForm.confirm && passwordForm.new !== passwordForm.confirm && (
+            <p className="text-xs text-red-500">As senhas nao coincidem</p>
+          )}
+          {passwordForm.new && passwordForm.new.length < 6 && (
+            <p className="text-xs text-amber-600">A senha deve ter pelo menos 6 caracteres</p>
+          )}
           <div className="flex justify-end">
-            <button className="btn-primary"><Key className="w-4 h-4" /> Alterar Senha</button>
+            <button onClick={handleChangePassword} disabled={changingPassword} className="btn-primary">
+              <Key className="w-4 h-4" /> {changingPassword ? 'Alterando...' : 'Alterar Senha'}
+            </button>
           </div>
         </div>
       )}
