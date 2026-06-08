@@ -2,7 +2,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft, Users, Building, Target, Globe, CheckCircle,
-  MessageSquare, DollarSign, MapPin, Briefcase, ExternalLink,
+  MessageSquare, DollarSign, MapPin, Briefcase,
   Shield, Clock, TrendingUp, Award, Star,
 } from 'lucide-react';
 import {
@@ -90,8 +90,8 @@ export default function InvestorDetailPage() {
             { icon: TrendingUp, label: 'Taxa de Sucesso', value: `${successRate}%`, color: 'text-primary-600' },
             { icon: Award, label: 'Ticket Medio', value: formatCompactCurrency(avgDealSize), color: 'text-amber-600' },
             { icon: Star, label: 'Rating', value: '4.9/5', color: 'text-violet-600' },
-          ].map((s, i) => (
-            <div key={s.label} className={`py-4 text-center ${i < 3 ? 'border-r border-gray-100' : ''}`}>
+          ].map((s, idx) => (
+            <div key={s.label} className={`py-4 text-center ${idx < 3 ? 'border-r border-gray-100' : ''}`}>
               <s.icon className={`w-5 h-5 mx-auto ${s.color} mb-1`} />
               <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
               <p className="text-[11px] text-gray-400 uppercase tracking-wider">{s.label}</p>
@@ -212,10 +212,10 @@ export default function InvestorDetailPage() {
           <MessageSquare className="w-4 h-4 inline mr-2" /> Enviar Mensagem
         </Link>
         <Link
-          to="/dashboard/projetos"
+          to="/dashboard/investidores"
           className="flex-1 btn-secondary text-center py-3"
         >
-          <ExternalLink className="w-4 h-4 inline mr-2" /> Ver Projetos
+          Ver Todos os Investidores
         </Link>
       </div>
     </div>
