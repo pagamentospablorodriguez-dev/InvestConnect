@@ -109,7 +109,7 @@ export function DashboardLayout() {
       >
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-100">
           <Link to="/" className="flex items-center gap-2.5">
-            <img src="/ChatGPT_Image_6_de_jun._de_2026,_01_49_09.png" alt="InvestConnect BR" className="w-9 h-9" />
+            <img src="/ChatGPT Image 6 de jun. de 2026, 01_49_09.png" alt="InvestConnect BR" className="w-9 h-9" />
             <div>
               <span className="font-bold text-lg text-gray-900 leading-none">InvestConnect</span>
               <span className="block text-[10px] font-semibold text-emerald-600 tracking-wider uppercase">BR</span>
