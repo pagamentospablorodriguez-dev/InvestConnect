@@ -102,7 +102,7 @@ export default function SettingsPage() {
         {[
           { key: 'profile' as const, label: 'Perfil', icon: User },
           { key: 'security' as const, label: 'Seguranca', icon: Key },
-          { key: 'notifications' as const, label: 'Notificacoes', icon: Bell },
+          { key: 'notifications' as const, label: 'Notificações', icon: Bell },
         ].map((tab) => (
           <button
             key={tab.key}
