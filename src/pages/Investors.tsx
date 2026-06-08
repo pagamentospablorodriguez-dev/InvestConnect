@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Users, Building, Target, Globe, Search, CheckCircle,
-  MessageSquare, DollarSign, MapPin,
+  MessageSquare, MapPin, ArrowRight,
 } from 'lucide-react';
 import {
   formatCompactCurrency, formatNumber,
@@ -119,16 +119,16 @@ export default function InvestorsPage() {
 
               <div className="flex gap-2 pt-4 border-t border-gray-50">
                 <Link
-                  to="/dashboard/mensagens"
+                  to={`/dashboard/investidores/${inv.id}`}
                   className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-primary-50 text-primary-600 text-sm font-semibold rounded-lg hover:bg-primary-100 transition-colors"
                 >
-                  <MessageSquare className="w-4 h-4" /> Mensagem
+                  Ver Perfil <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
-                  to="/dashboard/projetos"
+                  to="/dashboard/mensagens"
                   className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-emerald-50 text-emerald-600 text-sm font-semibold rounded-lg hover:bg-emerald-100 transition-colors"
                 >
-                  <DollarSign className="w-4 h-4" /> Ver Projetos
+                  <MessageSquare className="w-4 h-4" /> Mensagem
                 </Link>
               </div>
             </motion.div>
