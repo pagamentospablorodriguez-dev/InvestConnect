@@ -54,12 +54,12 @@ export function WelcomeModal({ onClose, userName }: { onClose: () => void; userN
       <motion.div initial={{ opacity: 0, scale: 0.9, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl text-center">
         <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-600 to-emerald-500 flex items-center justify-center mx-auto mb-6 shadow-xl"><CheckCircle className="w-10 h-10 text-white" /></div>
         <h2 className="text-2xl font-extrabold text-gray-900 mb-2">Conta criada com sucesso!</h2>
-        <p className="text-gray-500 mb-6">Bem-vindo{userName ? `, ${userName}` : ''}! Sua conta esta ativa e voce ja pode comecar a receber lances de investimento.</p>
+        <p className="text-gray-500 mb-6">Bem-vindo{userName ? `, ${userName}` : ''}! Sua conta esta ativa. Comece explorando a plataforma.</p>
         <div className="grid grid-cols-3 gap-3 mb-6">
           {[
-            { icon: Users, label: '847+ investidores', color: 'text-primary-600 bg-primary-50' },
-            { icon: Zap, label: 'Lances em 7 dias', color: 'text-amber-600 bg-amber-50' },
-            { icon: CheckCircle, label: '94% de sucesso', color: 'text-emerald-600 bg-emerald-50' },
+            { icon: Users, label: 'Investidores ativos', color: 'text-primary-600 bg-primary-50' },
+            { icon: Zap, label: 'Projetos publicados', color: 'text-amber-600 bg-amber-50' },
+            { icon: CheckCircle, label: 'Negocios fechados', color: 'text-emerald-600 bg-emerald-50' },
           ].map((item) => (
             <div key={item.label} className={`rounded-xl p-3 ${item.color}`}>
               <item.icon className="w-5 h-5 mx-auto mb-1" />
