@@ -3,12 +3,13 @@ import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import {
-  TrendingUp, Menu, X, User, Package, DollarSign,
+  Menu, X, User, Package, DollarSign,
   MessageSquare, Bell, LogOut, Settings, Users, Home,
   ChevronDown, Search,
 } from 'lucide-react';
 import { getInitials, formatRelativeTime } from '../lib/utils';
 import { FAKE_ACTIVITY } from '../data/fakeData';
+import { UpgradeModal } from './UpgradeModal';
 
 function NotificationDropdown() {
   const [open, setOpen] = useState(false);
@@ -31,7 +32,7 @@ function NotificationDropdown() {
               className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden"
             >
               <div className="p-4 border-b bg-gray-50">
-                <h3 className="font-semibold text-gray-900">Notificacoes</h3>
+                <h3 className="font-semibold text-gray-900">Notificações</h3>
               </div>
               <div className="max-h-72 overflow-y-auto">
                 {recent.map((item) => (
@@ -59,6 +60,7 @@ export function DashboardLayout() {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const isEntrepreneur = profile?.user_type === 'entrepreneur';
 
   const navItems = isEntrepreneur
@@ -107,9 +109,7 @@ export function DashboardLayout() {
       >
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-100">
           <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-primary-600/20">
-              <TrendingUp className="w-5 h-5 text-white" />
-            </div>
+            <img src="/ChatGPT_Image_6_de_jun._de_2026,_01_49_09.png" alt="InvestConnect BR" className="w-9 h-9" />
             <div>
               <span className="font-bold text-lg text-gray-900 leading-none">InvestConnect</span>
               <span className="block text-[10px] font-semibold text-emerald-600 tracking-wider uppercase">BR</span>
@@ -145,7 +145,7 @@ export function DashboardLayout() {
           <div className="bg-gradient-to-r from-primary-50 to-emerald-50 rounded-xl p-4 mb-3">
             <p className="text-xs font-semibold text-primary-700 mb-1">Upgrade Pro</p>
             <p className="text-[11px] text-gray-600 mb-2">Desbloqueie recursos avancados e prioridade nos lances</p>
-            <button className="w-full py-1.5 bg-primary-600 text-white text-xs font-semibold rounded-lg hover:bg-primary-700 transition-colors">
+            <button onClick={() => setUpgradeOpen(true)} className="w-full py-1.5 bg-primary-600 text-white text-xs font-semibold rounded-lg hover:bg-primary-700 transition-colors">
               Saiba Mais
             </button>
           </div>
@@ -229,6 +229,8 @@ export function DashboardLayout() {
           <Outlet />
         </main>
       </div>
+
+      <UpgradeModal isOpen={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
     </div>
   );
 }
